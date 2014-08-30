@@ -5,7 +5,7 @@ import (
 	"math"
 	"strings"
 	"strconv"
-	"zigloo.ch/dlx"
+	"github.com/zigloo/godlx/dlx"
 )
 
 func CreateSolutionGrid(sol *dlx.Solution, k uint64) *Sudoku {

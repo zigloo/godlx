@@ -2,7 +2,7 @@ package sudoku
 
 import (
 	"fmt"
-	"zigloo.ch/sudoku"
+	"github.com/zigloo/godlx/sudoku"
 )
 
 func Example_sudoku() {
