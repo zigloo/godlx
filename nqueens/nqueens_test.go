@@ -1,7 +1,7 @@
 package nqueens
 
 import (
-	"zigloo.ch/nqueens"
+	"github.com/zigloo/godlx/nqueens"
 )
 
 func Example_onequeen() {

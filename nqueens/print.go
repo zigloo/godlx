@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"strconv"
-	"zigloo.ch/dlx"
+	"github.com/zigloo/godlx/dlx"
 )
 
 type Nqueens [][]byte
