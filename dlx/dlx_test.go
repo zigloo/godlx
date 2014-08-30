@@ -1,7 +1,7 @@
 package dlx
 
 import (
-	"zigloo.ch/dlx"
+	"github.com/zigloo/godlx/dlx"
 )
 
 func Example_empty() {
