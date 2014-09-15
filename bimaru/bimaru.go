@@ -10,7 +10,7 @@ func (b *Bimaru) SolveBimaru() {
 	var root *dlx.Column
 	//var d dlx.RowData
 	var name dlx.RowName
-	var dataSize, nship int
+	var dataSize, nship, orient int
 	var s_h_size, s_v_size, size, max_pass int
 	var f *Bimaru
 	var ok, valid bool
@@ -28,7 +28,10 @@ func (b *Bimaru) SolveBimaru() {
 
 	nship = len(f.Ship)
 
-	dataSize = nship + f.v_size * f.h_size
+	dataSize = nship + f.v_size * f.h_size + 1
+
+	// orient to solve 2 ship on bottom indetermination (see print.go)
+	orient = dataSize - 1
 
 	root = dlx.GetRoot()
 
@@ -192,6 +195,9 @@ func (b *Bimaru) SolveBimaru() {
 				d := make(dlx.RowData,dataSize)
 
 				d[si] = 1
+				if fs.ships[p].dc == 1 {
+					d[orient] = 1
+				}
 
 				for ri:= fs.ships[p].r; ri < fs.ships[p].r + s_v_size; ri++ {
 					if f.Constraint[1][ri] > 0 {
@@ -349,6 +355,9 @@ func (b *Bimaru) SolveBimaru() {
 							}
 
 							if ok {
+								if pass == 1 {
+									d[orient] = 1
+								}
 								numberRows++
 								numberbyship++
 							//	root.PrintRowData(d)
@@ -382,6 +391,8 @@ func (b *Bimaru) SolveBimaru() {
 			if f.Ship[p] > 0 {
 				name[p] = strconv.Itoa(int(f.Ship[p]))
 			}
+		} else if p == orient {
+			name[p] = "h"
 		} else {
 			name[p] = "(" + strconv.Itoa((p - nship) / f.h_size) + "," + strconv.Itoa((p - nship) % f.h_size) + ")"
 		}

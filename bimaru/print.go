@@ -14,14 +14,7 @@ func CreateSolutionGrid(sol *dlx.Solution, k uint64) *Bimaru {
 	var n string
 	var fs *fullships
 	var b *Bimaru
-
-/*
-	grid = make(Sudoku,size)
-	for ri := range grid {
-		grid[ri] = make([]byte,size)
-	}
-
-*/
+	var horizontal bool
 
 	fs = getFullShips()
 
@@ -36,6 +29,7 @@ func CreateSolutionGrid(sol *dlx.Solution, k uint64) *Bimaru {
 		cmin = math.MaxUint64
 		rmax = 0
 		cmax = 0
+		horizontal = false
 		for {
 			n = c.GetCenterName()
 			if len(n) > 0 {
@@ -53,6 +47,8 @@ func CreateSolutionGrid(sol *dlx.Solution, k uint64) *Bimaru {
 					} else if col > cmax {
 						cmax = col
 					}
+				} else if strings.HasPrefix(n,"h") {
+					horizontal = true
 				} else {
 					val,_ = strconv.ParseUint(n,10,64)
 				}
@@ -69,33 +65,33 @@ func CreateSolutionGrid(sol *dlx.Solution, k uint64) *Bimaru {
 			h_size = cmax
 		}
 
-		// TODO: solve the 2 ship near the bottom right indetermination
+		// last data column solves the 2 ship bottom indetermination
 		// solution data
 		// ...
-		// ... - - - -
-		// ... - - 1 1
-		// ... - - 1 1
+		// ... - - - - ...
+		// ... - 1 1 - ...
+		// ... - 1 1 - ...
 		// where is the 2 ship
 		// here
-		// ... - - x -
-		// ... - - x -
+		// ... - x - - ...
+		// ... - x - - ...
 		// or there
-		// ... - - x x
-		// ... - - - -
+		// ... - x x - ...
+		// ... - - - - ...
 		// Actually it is there
-		// ... - - x x
-		// ... - - - -
+		// ... - x x - ...
+		// ... - - - - ...
 		if val == 1 {
 			dr = 0
 			dc = 0
-		} else if rmax - rmin > cmax - cmin {
-			dr = 1
-			dc = 0
-		} else {
+		} else if horizontal {
 			dr = 0
 			dc = 1
+		} else {
+			dr = 1
+			dc = 0
 		}
-		//fmt.Println("Ship:",int(rmin),int(cmin),int(rmax),int(cmax),int(dr),int(dc),int(val))
+		//fmt.Println("Ship:",int(rmin),int(cmin),int(rmax),int(cmax),int(dr),int(dc),int(val),horizontal)
 		fs.addShip(int(rmin),int(cmin),int(dr),int(dc),int(val))
 	}
 

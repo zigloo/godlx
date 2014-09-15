@@ -13,9 +13,9 @@ func Example_bimaru() {
 	b.Constraint[0] = []byte{1,2,3,4,2,3,1,2,0,2}
 	b.Constraint[1] = []byte{1,0,2,2,2,0,2,3,5,3}
 
-	//b.Grid[2][6] = b.One()
-	//b.Grid[6][9] = b.One()
-	//b.Grid[8][1] = b.Up()
+	b.Grid[2][6] = b.One()
+	b.Grid[6][9] = b.One()
+	b.Grid[8][1] = b.Up()
 
 	//b.Grid[6][1] = b.Up()
 	//b.Grid[7][1] = b.Center()
