@@ -293,13 +293,21 @@ func (h *Column) PrintColumn() {
 
 // A tool function to print a data row
 func (c *Column) PrintRowData(d RowData) {
+	var pos uint64
+
+	pos = 0
 	for _,p := range d {
+		pos++
 		if p == 1 {
 			fmt.Print("1")
 		} else {
 			fmt.Print("-")
 		}
-		fmt.Print(" ")
+		if pos % 10 != 0 {
+			fmt.Print(" ")
+		} else {
+			fmt.Print("|")
+		}
 	}
 	fmt.Println()
 }
