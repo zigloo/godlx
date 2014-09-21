@@ -92,7 +92,6 @@ func (b *Bimaru) initialize(h_size, v_size int) *Bimaru {
 			if ri < len(b.Grid) {
 				if ci < len(f.Grid[ri]) {
 					v := b.Grid[ri][ci]
-					//TODO: check more constraints (no D on bottom, ...)
 					switch v {
 						case b.Empty(),
 						     b.One(),
@@ -111,7 +110,6 @@ func (b *Bimaru) initialize(h_size, v_size int) *Bimaru {
 		}
 	}
 
-	//TODO: check constraints
 	f.Ship = make([]byte,len(b.Ship))
 
 	for ri,r := range b.Ship {
@@ -123,7 +121,6 @@ func (b *Bimaru) initialize(h_size, v_size int) *Bimaru {
 			for ci := range r {
 				if ci < len(b.Constraint[ri]) {
 					v := b.Constraint[ri][ci]
-					// TODO: get v constraint from ships
 					if ri == 0 {
 						if int(v) <= h_size {
 							f.Constraint[ri][ci] = v
@@ -141,15 +138,17 @@ func (b *Bimaru) initialize(h_size, v_size int) *Bimaru {
 	return &f
 }
 
-func (b *Bimaru) Print() {
+func (b *Bimaru) Print(withConstraintsAndShips bool) {
 	var f *Bimaru
 
 	f = b.initialize(b.h_size, b.v_size)
 
 	for ri, r := range f.Grid {
-		fmt.Print(f.Constraint[1][ri])
-		fmt.Print(" ")
-		for _, v := range r {
+		if withConstraintsAndShips {
+			fmt.Print(f.Constraint[1][ri])
+			fmt.Print(" ")
+		}
+		for ci, v := range r {
 			switch v {
 				case f.Empty(): fmt.Print("-")
 				case f.One(): fmt.Print("O")
@@ -161,25 +160,33 @@ func (b *Bimaru) Print() {
 				case f.Water(): fmt.Print("W")
 				case f.unknown(): fmt.Print("?")
 			}
-			fmt.Print(" ")
+			if ! ( ci == (len(f.Constraint[0]) - 1)  ) {
+				fmt.Print(" ")
+			}
 		}
 		fmt.Println()
 	}
-	fmt.Print("  ")
-	for _,r := range f.Constraint[0] {
-		fmt.Print(r)
-		fmt.Print(" ")
+	if withConstraintsAndShips {
+		fmt.Print("  ")
+		for ri,r := range f.Constraint[0] {
+			fmt.Print(r)
+			if ! (ri == (len(f.Constraint[0]) - 1)) {
+				fmt.Print(" ")
+			}
+		}
+		fmt.Println()
 	}
-	fmt.Println()
 
 	//TODO: sort by size and print a count of ships by size
-	fmt.Println()
-	for _,r := range f.Ship {
-		if r > 0 {
-			fmt.Print(r)
-			fmt.Print(" ")
-			fmt.Print(strings.Repeat("*",int(r)))
-			fmt.Println()
+	if withConstraintsAndShips {
+		fmt.Println()
+		for _,r := range f.Ship {
+			if r > 0 {
+				fmt.Print(r)
+				fmt.Print(" ")
+				fmt.Print(strings.Repeat("*",int(r)))
+				fmt.Println()
+			}
 		}
 	}
 }

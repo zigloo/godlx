@@ -38,13 +38,10 @@ func (s *Shuffle) Permut(n uint64) {
 				for {
 					from = uint64(r.Int63n(int64(size)))
 					to = uint64(r.Int63n(int64(size)))
-					fmt.Println(i+1,":",from,"->",to)
 					if from != to {
-						fmt.Println(s.rows[from],s.rows[to])
 						temp = s.rows[from]
 						s.rows[from] = s.rows[to]
 						s.rows[to] = temp
-						fmt.Println(s.rows[from],s.rows[to])
 						break
 					}
 				}

@@ -89,7 +89,6 @@ func (b *Bimaru) constraints_size() int {
 	for _,v :=range b.Constraint[1] {
 		bit_size += int(v)
 	}
-	//fmt.Println("Size",bit_size)
 
 	return bit_size
 
@@ -99,27 +98,22 @@ func (b *Bimaru) constraints(co *constraint, s_v_size, s_h_size, r, c int) *cons
 	var bit_size, co_size int
 	var grid constraints_grid
 
-	fmt.Println("Parameters",s_v_size,s_h_size,r,c)
 
 	// the number of bits we need is the sum of all constraints
 	bit_size = b.constraints_size()
-	//fmt.Println("Size",bit_size)
 
 	// the number of constraints (row) is the product of the number of way to write ship sizes
 	// on each constraint  
 	co_size = 1
 	for ri:= r; ri < r + s_v_size ; ri++ {
-		//fmt.Println("constraint v:",ri," ",b.Constraint[1][ri])
 		// each row is s_h_size size
 		co_size *= int(co.d[b.Constraint[1][ri]][0][s_h_size])
 	}
 	for ci:=c; ci < c + s_h_size; ci++ {
-		//fmt.Println("constraint h:",ci," ",b.Constraint[0][ci])
 		// each row is s_v_size size
 		co_size *= int(co.d[b.Constraint[0][ci]][0][s_v_size])
 	}
 
-	fmt.Println("Constraints size",co_size)
 
 	// the grid of constraints
 	grid = make(constraints_grid,co_size)
@@ -157,7 +151,6 @@ func (b *Bimaru) constraints(co *constraint, s_v_size, s_h_size, r, c int) *cons
 					for bi,bv:= range co.d[b.Constraint[1][ri]][ti] {
 						if bi != 0 {
 							for l:= 0; l < repeat; l++ {
-								//fmt.Println("r col","ri",ri,"bloc",bloc,"pos",pos,"l",l,"index index",b.h_size+ri,"col",bloc*blocsize + pos*repeat + l,"bv",bv,"grid_v_delta",grid_v_delta,"blocsize",blocsize)
 								grid[bloc*blocsize + pos*repeat + l][index[b.h_size + ri] + bi - 1] = bv
 							}
 						}
@@ -183,7 +176,6 @@ func (b *Bimaru) constraints(co *constraint, s_v_size, s_h_size, r, c int) *cons
 					for bi,bv:= range co.d[b.Constraint[0][ci]][ti] {
 						if bi != 0 {
 							for l:= 0; l < repeat; l++ {
-								//fmt.Println("c col","ci",ci,"bloc",bloc,"pos",pos,"l",l,"index index",ci,"col",bloc*blocsize + pos*repeat + l,"bv",bv,"grid_v_delta",grid_v_delta,"blocsize",blocsize)
 								grid[bloc*blocsize + pos*repeat + l][index[ci] + bi - 1] = bv
 							}
 						}
@@ -194,8 +186,8 @@ func (b *Bimaru) constraints(co *constraint, s_v_size, s_h_size, r, c int) *cons
 		}
 	}
 
+/*
 	// print the grid to check result
-	fmt.Println("(",r,",",c,") => ",s_v_size,",",s_h_size)
 	for _,rv:= range grid {
 		pos:= 0
 		for ci,cv:= range rv {
@@ -216,7 +208,7 @@ func (b *Bimaru) constraints(co *constraint, s_v_size, s_h_size, r, c int) *cons
 		}
 		fmt.Println("|")
 	}
-
+*/
 	return &grid
 }
 

@@ -91,7 +91,6 @@ func CreateSolutionGrid(sol *dlx.Solution, k uint64) *Bimaru {
 			dr = 1
 			dc = 0
 		}
-		//fmt.Println("Ship:",int(rmin),int(cmin),int(rmax),int(cmax),int(dr),int(dc),int(val),horizontal)
 		fs.addShip(int(rmin),int(cmin),int(dr),int(dc),int(val))
 	}
 
@@ -99,12 +98,10 @@ func CreateSolutionGrid(sol *dlx.Solution, k uint64) *Bimaru {
 	v_size++
 
 	b = GetBimaru(int(h_size),int(v_size))
-	//fmt.Println("Size:",h_size,v_size)
 
 	for _,s:= range fs.ships {
 		s_v_size := (s.size - 1) * s.dr + 1
 		s_h_size := (s.size - 1) * s.dc + 1
-		//fmt.Println(s.size,s_v_size,s_h_size)
 		for ri:= 0; ri < s_v_size; ri++ {
 			for ci:= 0; ci < s_h_size; ci++ {
 				if ri + s.r < int(v_size) && ci + s.c < int(h_size) {
@@ -153,7 +150,7 @@ func PrintSolution() (dlx.GetNumberDLXSolutions, dlx.PrintDLXSolution) {
 
 		b = CreateSolutionGrid(sol,k)
 
-		b.Print()
+		b.Print(false)
 	}
 }
 

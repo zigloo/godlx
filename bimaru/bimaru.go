@@ -1,7 +1,6 @@
 package bimaru
 
 import (
-	"fmt"
 	"strconv"
 	"github.com/zigloo/godlx/dlx"
 )
@@ -35,8 +34,6 @@ func (b *Bimaru) SolveBimaru() {
 	}
 
 	c = getConstraint(max_constraint)
-
-	c.print()
 
 	root = dlx.GetRoot()
 
@@ -191,7 +188,6 @@ func (b *Bimaru) SolveBimaru() {
 	// orient to solve 2 ship on bottom indetermination (see print.go)
 	orient = dataSize - 1
 
-	fmt.Println("nship",nship,"constarints",constraints_size,"delta",delta)
 	name = make(dlx.RowName, dataSize)
 
 	numberRows = 0
@@ -255,12 +251,8 @@ func (b *Bimaru) SolveBimaru() {
 							}
 						}
 
-						//grid = b.constraints(c,s_v_size,s_h_size,ri,ci)
-
 						numberRows++
-					//	root.PrintRowData(d)
 						sh.AddRow(&d)
-						//root.AddRow(d)
 					}
 				}
 				break
@@ -274,10 +266,6 @@ func (b *Bimaru) SolveBimaru() {
 	if ! valid {
 		panic("Invalid grid.")
 	}
-
-	f.Print()
-
-	fs.print()
 
 	// add constraints
 	for si, ship := range f.Ship {
@@ -313,7 +301,6 @@ func (b *Bimaru) SolveBimaru() {
 												   ( max_pass == 2 &&
 												      ( value == f.Left() || value == f.Up() || value == f.unknown() ) ||
 												     max_pass == 1 && value == f.One() ) ) {
-												//	fmt.Println(s_v_size,s_h_size,ri+1,ci+1,"refused: head",value)
 													ok = false
 												}
 											} else if ( sri == s_v_size - 1 ) && ( sci == s_h_size - 1 ){// check ship tail
@@ -321,7 +308,6 @@ func (b *Bimaru) SolveBimaru() {
 												   ( max_pass == 2 &&
 												      ( value == f.Right() || value == f.Down() || value == f.unknown() ) ||
 												     max_pass == 1 && value == f.One() ) ) {
-												//	fmt.Println(s_v_size,s_h_size,ri+1,ci+1,"refused: tail",value)
 													ok = false
 												}
 											} else { // check ship center
@@ -329,7 +315,6 @@ func (b *Bimaru) SolveBimaru() {
 												   ( max_pass == 2 && 
 												      ( value == f.Center() || value == f.unknown() ) ||
 												     max_pass == 1 && value == f.One() ) ) {
-												//	fmt.Println(s_v_size,s_h_size,ri+1,ci+1,"refused: center",value)
 													ok = false
 												}
 											}
@@ -382,10 +367,7 @@ func (b *Bimaru) SolveBimaru() {
 
 								numberRows += uint64(len(*grid))
 								numberbyship += len(*grid)
-							//	root.PrintRowData(d)
-								//sh.AddRow(&d)
 								sh.extend(nship,&d,grid)
-								//root.AddRow(d)
 							}
 						}
 					}
@@ -395,18 +377,10 @@ func (b *Bimaru) SolveBimaru() {
 				s_h_size = s_v_size
 				s_v_size = size
 			}
-			fmt.Println("For ship",ship,numberbyship)
 		}
 	}
 
-	//sh.Permut(numberRows)
-	//sh.Permut(10000)
-	//sh.AddToRoot(numberRows,root)
-
 	sh.AddToRoot(root)
-	//sh.Print()
-
-	fs.print()
 
 	// add names
 	for p := range name {
@@ -419,17 +393,11 @@ func (b *Bimaru) SolveBimaru() {
 		} else if p >= delta {
 			name[p] = "(" + strconv.Itoa((p - delta) / f.h_size) + "," + strconv.Itoa((p - delta) % f.h_size) + ")"
 		} else {
-			//name[p] = strconv.Itoa(int(p-nship))
 			name[p] = ""
 		}
 	}
 
 	root.SetColumnName(name)
 
-	root.PrintColumn()
-
-	fmt.Println("Number rows",numberRows)
-
 	root.Solve(uint64(nship),dlx.First,1,GetPrint())
-	//root.Solve(uint64(delta),dlx.First,2,GetPrint())
 }
