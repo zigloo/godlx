@@ -2,6 +2,7 @@ package bimaru
 
 import (
 	"fmt"
+	"github.com/zigloo/godlx/dlx"
 )
 
 type constraint struct {
@@ -12,7 +13,9 @@ type constraint struct {
 	d [][][]byte
 }
 
-func getConstraint(max byte) *constraint {
+type constraints_grid [][]byte
+
+func getConstraint(max int) *constraint {
 	var c *constraint
 
 	c = new(constraint)
@@ -77,23 +80,30 @@ func (c *constraint) print() {
 	}
 }
 
-func (b *Bimaru) constraints(co *constraint, s_v_size, s_h_size, r, c int) {
+func (b *Bimaru) constraints_size() int {
+	// the number of bits we need is the sum of all constraints
+	bit_size := 0
+	for _,v :=range b.Constraint[0] {
+		bit_size += int(v)
+	}
+	for _,v :=range b.Constraint[1] {
+		bit_size += int(v)
+	}
+	//fmt.Println("Size",bit_size)
+
+	return bit_size
+
+}
+
+func (b *Bimaru) constraints(co *constraint, s_v_size, s_h_size, r, c int) *constraints_grid {
 	var bit_size, co_size int
-	var grid [][]byte
+	var grid constraints_grid
 
 	fmt.Println("Parameters",s_v_size,s_h_size,r,c)
 
 	// the number of bits we need is the sum of all constraints
-	bit_v_size := 0
-	bit_h_size := 0
-	for _,v :=range b.Constraint[0] {
-		bit_h_size += int(v)
-	}
-	for _,v :=range b.Constraint[1] {
-		bit_v_size += int(v)
-	}
-	bit_size = bit_h_size + bit_v_size
-	//fmt.Println("Size",bit_size,bit_h_size,bit_v_size)
+	bit_size = b.constraints_size()
+	//fmt.Println("Size",bit_size)
 
 	// the number of constraints (row) is the product of the number of way to write ship sizes
 	// on each constraint  
@@ -112,7 +122,7 @@ func (b *Bimaru) constraints(co *constraint, s_v_size, s_h_size, r, c int) {
 	fmt.Println("Constraints size",co_size)
 
 	// the grid of constraints
-	grid = make([][]byte,co_size)
+	grid = make(constraints_grid,co_size)
 	for ri:= range grid {
 		grid[ri] = make([]byte,bit_size)
 	}
@@ -205,5 +215,21 @@ func (b *Bimaru) constraints(co *constraint, s_v_size, s_h_size, r, c int) {
 			fmt.Print(cv)
 		}
 		fmt.Println("|")
+	}
+
+	return &grid
+}
+
+func (s *Shuffle) extend(delta int, d *dlx.RowData, g *constraints_grid) {
+	for _,rv:= range *g {
+		completed_data:= make(dlx.RowData,len(*d))
+		for di,dv:= range *d {
+			completed_data[di] = dv
+		}
+		for ci,cv:= range rv {
+			completed_data[delta + ci] = cv
+		}
+
+		s.AddRow(&completed_data)
 	}
 }

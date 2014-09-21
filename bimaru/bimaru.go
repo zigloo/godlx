@@ -17,11 +17,7 @@ func (b *Bimaru) SolveBimaru() {
 	var sh *Shuffle
 	var fs *fullships
 	var c *constraint
-
-	c = getConstraint(5)
-
-	c.print()
-
+	var grid *constraints_grid
 
 	fs = getFullShips()
 
@@ -29,16 +25,18 @@ func (b *Bimaru) SolveBimaru() {
 
 	f = b.initialize(b.h_size, b.v_size)
 
-	//b.constraints(c,2,1,3,2)
+	max_constraint:= 0
+	for _,cv:= range f.Constraint {
+		for _,v:= range cv {
+			if int(v) > max_constraint {
+				max_constraint = int(v)
+			}
+		}
+	}
 
-	//f. Print()
+	c = getConstraint(max_constraint)
 
-	nship = len(f.Ship)
-
-	dataSize = nship + f.v_size * f.h_size + 1
-
-	// orient to solve 2 ship on bottom indetermination (see print.go)
-	orient = dataSize - 1
+	c.print()
 
 	root = dlx.GetRoot()
 
@@ -182,6 +180,18 @@ func (b *Bimaru) SolveBimaru() {
 		}
 	}
 
+	nship = len(f.Ship)
+
+	constraints_size:= f.constraints_size() - fs.size()
+
+	delta:= nship + constraints_size
+
+	dataSize = delta + f.v_size * f.h_size + 1
+
+	// orient to solve 2 ship on bottom indetermination (see print.go)
+	orient = dataSize - 1
+
+	fmt.Println("nship",nship,"constarints",constraints_size,"delta",delta)
 	name = make(dlx.RowName, dataSize)
 
 	numberRows = 0
@@ -219,7 +229,7 @@ func (b *Bimaru) SolveBimaru() {
 							valid = false
 						}
 
-						d[nship + ri * f.h_size + ci] = 1
+						d[delta + ri * f.h_size + ci] = 1
 
 						// add water around ship (below and on the right)
 
@@ -228,7 +238,7 @@ func (b *Bimaru) SolveBimaru() {
 							for sci:= 0; sci <= s_h_size; sci++ {
 								if ci + sci < f.h_size {
 									if f.canHaveWater(ri + s_v_size, ci + sci) {
-										d[nship + (ri + s_v_size) * f.h_size + ci + sci] = 1
+										d[delta + (ri + s_v_size) * f.h_size + ci + sci] = 1
 									}
 								}
 							}
@@ -239,15 +249,16 @@ func (b *Bimaru) SolveBimaru() {
 							for sri:= 0; sri < s_v_size; sri++ {
 								if ri + sri < f.v_size {
 									if f.canHaveWater(ri + sri, ci + s_h_size) {
-										d[nship + (ri + sri) * f.h_size + ci + s_h_size] = 1
+										d[delta + (ri + sri) * f.h_size + ci + s_h_size] = 1
 									}
 								}
 							}
 						}
 
+						//grid = b.constraints(c,s_v_size,s_h_size,ri,ci)
+
 						numberRows++
 					//	root.PrintRowData(d)
-	b.constraints(c,s_v_size,s_h_size,ri,ci)
 						sh.AddRow(&d)
 						//root.AddRow(d)
 					}
@@ -323,7 +334,7 @@ func (b *Bimaru) SolveBimaru() {
 												}
 											}
 											if ok {
-												d[nship + (ri + sri) * f.h_size + ci + sci] = 1
+												d[delta + (ri + sri) * f.h_size + ci + sci] = 1
 											}
 										} else {
 											ok = false
@@ -341,7 +352,7 @@ func (b *Bimaru) SolveBimaru() {
 								for sci:= 0; ok && sci <= s_h_size; sci++ {
 									if ci + sci < f.h_size {
 										if f.canHaveWater(ri + s_v_size, ci + sci) {
-											d[nship + (ri + s_v_size) * f.h_size + ci + sci] = 1
+											d[delta + (ri + s_v_size) * f.h_size + ci + sci] = 1
 										} else {
 											ok = false
 										}
@@ -354,7 +365,7 @@ func (b *Bimaru) SolveBimaru() {
 								for sri:= 0; ok && sri < s_v_size; sri++ {
 									if ri + sri < f.v_size {
 										if f.canHaveWater(ri + sri, ci + s_h_size) {
-											d[nship + (ri + sri) * f.h_size + ci + s_h_size] = 1
+											d[delta + (ri + sri) * f.h_size + ci + s_h_size] = 1
 										} else {
 											ok = false
 										}
@@ -366,11 +377,14 @@ func (b *Bimaru) SolveBimaru() {
 								if pass == 1 {
 									d[orient] = 1
 								}
-								numberRows++
-								numberbyship++
-	f.constraints(c,s_v_size,s_h_size,ri,ci)
+
+								grid = f.constraints(c,s_v_size,s_h_size,ri,ci)
+
+								numberRows += uint64(len(*grid))
+								numberbyship += len(*grid)
 							//	root.PrintRowData(d)
-								sh.AddRow(&d)
+								//sh.AddRow(&d)
+								sh.extend(nship,&d,grid)
 								//root.AddRow(d)
 							}
 						}
@@ -381,7 +395,7 @@ func (b *Bimaru) SolveBimaru() {
 				s_h_size = s_v_size
 				s_v_size = size
 			}
-			//fmt.Println("For ship",ship,numberbyship)
+			fmt.Println("For ship",ship,numberbyship)
 		}
 	}
 
@@ -389,7 +403,7 @@ func (b *Bimaru) SolveBimaru() {
 	//sh.Permut(10000)
 	//sh.AddToRoot(numberRows,root)
 
-	sh.AddToRoot(10000,root)
+	sh.AddToRoot(root)
 	//sh.Print()
 
 	fs.print()
@@ -402,8 +416,11 @@ func (b *Bimaru) SolveBimaru() {
 			}
 		} else if p == orient {
 			name[p] = "h"
+		} else if p >= delta {
+			name[p] = "(" + strconv.Itoa((p - delta) / f.h_size) + "," + strconv.Itoa((p - delta) % f.h_size) + ")"
 		} else {
-			name[p] = "(" + strconv.Itoa((p - nship) / f.h_size) + "," + strconv.Itoa((p - nship) % f.h_size) + ")"
+			//name[p] = strconv.Itoa(int(p-nship))
+			name[p] = ""
 		}
 	}
 
@@ -413,6 +430,6 @@ func (b *Bimaru) SolveBimaru() {
 
 	fmt.Println("Number rows",numberRows)
 
-	//root.Solve(uint64(nship),dlx.First,2,dlx.GetPrint())
-	root.Solve(uint64(nship),dlx.First,2,GetPrint())
+	root.Solve(uint64(nship),dlx.First,1,GetPrint())
+	//root.Solve(uint64(delta),dlx.First,2,GetPrint())
 }

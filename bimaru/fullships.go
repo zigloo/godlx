@@ -57,3 +57,12 @@ func (fs *fullships) hasShip(r,c int) bool {
 	}
 	return false
 }
+
+func (fs *fullships) size() int {
+	s:= 0
+	for p:= range fs.ships {
+		s += fs.ships[p].size + 1
+	}
+
+	return s
+}

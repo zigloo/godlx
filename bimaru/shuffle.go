@@ -54,10 +54,7 @@ func (s *Shuffle) Permut(n uint64) {
 
 }
 
-func (s *Shuffle) AddToRoot(n uint64, r *dlx.Column) {
-
-	//s.Permut(n)
-
+func (s *Shuffle) AddToRoot(r *dlx.Column) {
 	for i:=0; i < len(s.rows); i++ {
 		r.AddRow(*s.rows[uint64(i)])
 	}
