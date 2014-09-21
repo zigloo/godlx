@@ -8,7 +8,6 @@ import (
 
 func (b *Bimaru) SolveBimaru() {
 	var root *dlx.Column
-	//var d dlx.RowData
 	var name dlx.RowName
 	var dataSize, nship, orient int
 	var s_h_size, s_v_size, size, max_pass int
@@ -17,12 +16,20 @@ func (b *Bimaru) SolveBimaru() {
 	var numberRows uint64
 	var sh *Shuffle
 	var fs *fullships
+	var c *constraint
+
+	c = getConstraint(5)
+
+	c.print()
+
 
 	fs = getFullShips()
 
 	sh = GetShuffle()
 
 	f = b.initialize(b.h_size, b.v_size)
+
+	//b.constraints(c,2,1,3,2)
 
 	//f. Print()
 
@@ -240,6 +247,7 @@ func (b *Bimaru) SolveBimaru() {
 
 						numberRows++
 					//	root.PrintRowData(d)
+	b.constraints(c,s_v_size,s_h_size,ri,ci)
 						sh.AddRow(&d)
 						//root.AddRow(d)
 					}
@@ -360,6 +368,7 @@ func (b *Bimaru) SolveBimaru() {
 								}
 								numberRows++
 								numberbyship++
+	f.constraints(c,s_v_size,s_h_size,ri,ci)
 							//	root.PrintRowData(d)
 								sh.AddRow(&d)
 								//root.AddRow(d)
@@ -372,7 +381,7 @@ func (b *Bimaru) SolveBimaru() {
 				s_h_size = s_v_size
 				s_v_size = size
 			}
-			fmt.Println("For ship",ship,numberbyship)
+			//fmt.Println("For ship",ship,numberbyship)
 		}
 	}
 
